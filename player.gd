@@ -1,14 +1,14 @@
 extends Node2D
 
-var world_speed := 200.0 # rate at which things move towards bottom of screen
-var speed := 500.0 # player's speed
+var world_speed := 40.0 # rate at which things move towards bottom of screen
+var speed := 100.0 # player's speed
 var min_y := 0.20
 var max_y := 0.80
 
 @onready var screen_size := get_viewport_rect().size
 @onready var player_size: Vector2 = $Area2D/Sprite2D.get_rect().size * $Area2D/Sprite2D.global_scale
 
-@onready var dopple := $Area2D.duplicate(2)
+@onready var dopple := $Area2D.duplicate()
 
 func _ready():
 	# Set starting position
@@ -19,6 +19,9 @@ func _ready():
 	add_child(dopple)
 
 func _process(delta):
+	process_movement(delta)
+	
+func process_movement(delta):
 	var velocity := Vector2.ZERO
 	
 	# Get Input

@@ -9,4 +9,5 @@ script = ExtResource("1_onrkg")
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="Sprite2D" type="Sprite2D" parent="Area2D"]
+scale = Vector2(0.2, 0.2)
 texture = ExtResource("2_i3pqv")

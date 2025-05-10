@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://g3kdjfvp2obx"]
+
+[ext_resource type="PackedScene" uid="uid://uub7hjanhibl" path="res://player.tscn" id="1_gojnm"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_gojnm"]
+viewport_path = NodePath("SubViewport")
+
+[node name="TestLevel" type="Node2D"]
+
+[node name="SubViewport" type="SubViewport" parent="."]
+snap_2d_transforms_to_pixel = true
+size = Vector2i(180, 232)
+
+[node name="Player" parent="SubViewport" instance=ExtResource("1_gojnm")]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+texture_filter = 1
+offset_right = 720.0
+offset_bottom = 928.0
+texture = SubResource("ViewportTexture_gojnm")
