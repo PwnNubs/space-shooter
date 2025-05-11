@@ -4,6 +4,7 @@ var world_speed := 40.0 # rate at which things move towards bottom of screen
 var speed := 100.0 # player's speed
 var min_y := 0.20
 var max_y := 0.80
+var velocity : Vector2
 
 @onready var screen_size := get_viewport_rect().size
 @onready var player_size: Vector2 = $Area2D/Sprite2D.get_rect().size * $Area2D/Sprite2D.global_scale
@@ -11,7 +12,7 @@ var max_y := 0.80
 #@onready var bullet := load("res://scenes/projectiles/simple_bullet.tscn")
 @export var bullet : PackedScene
 
-var shoot_cooldown := 0.5
+var shoot_cooldown := 0.1
 var cooldown := shoot_cooldown
 
 func _ready():
@@ -23,8 +24,11 @@ func _ready():
 	add_child(dopple)
 
 func _process(delta):
-	cooldown -= delta
+
 	process_movement(delta)
+	
+	# shooting
+	cooldown -= delta
 	if cooldown <= 0.0:
 		cooldown = shoot_cooldown
 		var instance = bullet.instantiate()
@@ -32,11 +36,10 @@ func _process(delta):
 		instance.position = position
 		instance.rotation = rotation # + (PI / 2)
 		instance.scale = Vector2(1.0, 1.0)
-		instance.velocity = Vector2(cos(rotation - (PI / 2)), sin(rotation - (PI / 2)))
+		instance.velocity = (Vector2(cos(rotation - (PI / 2)), sin(rotation - (PI / 2))) * instance.speed) + (velocity / 8.0)
 	
 func process_movement(delta):
-	var velocity := Vector2.ZERO
-	
+	velocity = Vector2.ZERO
 	# Get Input
 	var input_velocity := Vector2.ZERO
 	if Input.is_action_pressed("move_right"):
@@ -52,9 +55,9 @@ func process_movement(delta):
 	# Push player back towards bottom of screen
 	if input_velocity.y >= 0 && position.y / screen_size.y < max_y:
 		velocity.y += world_speed
-	
+	velocity = (input_velocity * speed) + velocity
 	# Actually move player
-	position += ((input_velocity * speed) + velocity) * delta
+	position += velocity * delta
 	position.y = clamp(position.y, min_y * screen_size.y, max_y * screen_size.y)
 	
 	# wrapping

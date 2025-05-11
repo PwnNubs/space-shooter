@@ -1,10 +1,11 @@
 extends Area2D
 
 var velocity := Vector2.ZERO
-var speed := 10.0
+var speed := 100.0
+var lifetime := 240.0 / speed
 
 func _process(delta):
-	position += velocity * speed * delta
-	
-func _on_area_entered(area: Area2D) -> void:
-	pass #print(area)
+	position += velocity * delta
+	lifetime -= delta
+	if lifetime <= 0.0:
+		queue_free()
