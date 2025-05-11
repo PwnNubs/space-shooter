@@ -7,8 +7,12 @@ var max_y := 0.80
 
 @onready var screen_size := get_viewport_rect().size
 @onready var player_size: Vector2 = $Area2D/Sprite2D.get_rect().size * $Area2D/Sprite2D.global_scale
-
 @onready var dopple := $Area2D.duplicate()
+#@onready var bullet := load("res://scenes/projectiles/simple_bullet.tscn")
+@export var bullet : PackedScene
+
+var shoot_cooldown := 0.5
+var cooldown := shoot_cooldown
 
 func _ready():
 	# Set starting position
@@ -19,7 +23,16 @@ func _ready():
 	add_child(dopple)
 
 func _process(delta):
+	cooldown -= delta
 	process_movement(delta)
+	if cooldown <= 0.0:
+		cooldown = shoot_cooldown
+		var instance = bullet.instantiate()
+		owner.add_child(instance)
+		instance.position = position
+		instance.rotation = rotation # + (PI / 2)
+		instance.scale = Vector2(1.0, 1.0)
+		instance.velocity = Vector2(cos(rotation - (PI / 2)), sin(rotation - (PI / 2)))
 	
 func process_movement(delta):
 	var velocity := Vector2.ZERO
