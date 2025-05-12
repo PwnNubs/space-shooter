@@ -14,6 +14,7 @@ var velocity : Vector2
 
 var shoot_cooldown := 0.1
 var cooldown := shoot_cooldown
+var do_aim_at_mouse := true
 
 func _ready():
 	# Set starting position
@@ -24,19 +25,29 @@ func _ready():
 	add_child(dopple)
 
 func _process(delta):
-
 	process_movement(delta)
 	
 	# shooting
 	cooldown -= delta
 	if cooldown <= 0.0:
 		cooldown = shoot_cooldown
-		var instance = bullet.instantiate()
-		owner.add_child(instance)
-		instance.position = position
-		instance.rotation = rotation # + (PI / 2)
-		instance.scale = Vector2(1.0, 1.0)
-		instance.velocity = (Vector2(cos(rotation - (PI / 2)), sin(rotation - (PI / 2))) * instance.speed) + (velocity / 8.0)
+		var n_bullet := 1
+		for n in n_bullet:
+			var instance = bullet.instantiate()
+			var grid_offset = ((n_bullet - 1) * 2.0) + (n * 4.0)
+			owner.add_child(instance)
+			
+			# setup rotation
+			var angle := rotation - PI/2
+			if do_aim_at_mouse:
+				var m_pos := get_viewport().get_mouse_position()
+				angle = atan2(m_pos.y - position.y, m_pos.x - position.x)
+			instance.rotation = angle
+			# setup position
+			instance.position = position
+			instance.position.x -= grid_offset * sin(instance.rotation)
+			instance.position.y -= grid_offset * cos(instance.rotation)
+			instance.velocity = (Vector2(cos(instance.rotation), sin(instance.rotation)) * instance.speed) + (velocity / 8.0)
 	
 func process_movement(delta):
 	velocity = Vector2.ZERO
@@ -53,7 +64,7 @@ func process_movement(delta):
 		input_velocity = input_velocity.normalized()
 	
 	# Push player back towards bottom of screen
-	if input_velocity.y >= 0 && position.y / screen_size.y < max_y:
+	if input_velocity.y >= 0 and position.y / screen_size.y < (max_y - 0.005):
 		velocity.y += world_speed
 	velocity = (input_velocity * speed) + velocity
 	# Actually move player
@@ -66,10 +77,10 @@ func process_movement(delta):
 	# visual wrapping
 	var player_left := position.x - (player_size.x / 2)
 	var player_right := position.x + (player_size.x / 2)
-	if player_left < 0.0 && position.x > 0.0: # partially inside left wall
+	if player_left < 0.0 and position.x > 0.0: # partially inside left wall
 		dopple.position.x =   screen_size.x
 		dopple.show()
-	elif player_right > screen_size.x && position.x < screen_size.x: # partially inside right wall
+	elif player_right > screen_size.x and position.x < screen_size.x: # partially inside right wall
 		dopple.position.x = -screen_size.x
 		dopple.show()
 	else:

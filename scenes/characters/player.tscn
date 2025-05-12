@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cp7xa068g70v4" path="res://scenes/projectiles/simple_bullet.tscn" id="2_76oj4"]
 [ext_resource type="Texture2D" uid="uid://clqiepp6x1agn" path="res://assets/icon.svg" id="2_i3pqv"]
 
-[node name="Player" type="Node2D"]
+[node name="Player" type="Node2D" groups=["player"]]
 script = ExtResource("1_onrkg")
 bullet = ExtResource("2_76oj4")
 

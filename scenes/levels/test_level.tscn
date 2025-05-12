@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://g3kdjfvp2obx"]
 
 [ext_resource type="PackedScene" uid="uid://uub7hjanhibl" path="res://scenes/characters/player.tscn" id="1_jbqir"]
-[ext_resource type="Script" uid="uid://b7tmowl2pk1we" path="res://scenes/levels/area_2d.gd" id="2_yautc"]
+[ext_resource type="PackedScene" uid="uid://scqt0f4xo4sr" path="res://scenes/characters/enemy.tscn" id="3_v45ci"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jbqir"]
 size = Vector2(40, 6)
@@ -17,7 +17,7 @@ color = Color(0.0423054, 0.0423054, 0.0497857, 1)
 
 [node name="Area2D" type="Area2D" parent="."]
 position = Vector2(44, 74)
-script = ExtResource("2_yautc")
+monitoring = false
 
 [node name="ColorRect" type="ColorRect" parent="Area2D"]
 anchors_preset = 8
@@ -34,5 +34,8 @@ grow_vertical = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_jbqir")
+
+[node name="Enemy" parent="." instance=ExtResource("3_v45ci")]
+position = Vector2(93, 44)
 
 [connection signal="area_entered" from="Area2D" to="Area2D" method="_on_area_entered"]

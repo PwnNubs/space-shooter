@@ -7,14 +7,18 @@
 size = Vector2(2.5, 3)
 
 [node name="Bullet" type="Area2D" groups=["bullet"]]
-monitoring = false
+collision_layer = 0
+monitorable = false
 script = ExtResource("1_w71u1")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
+rotation = 1.5708
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("1_8yp3a")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
 shape = SubResource("RectangleShape2D_78jog")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
