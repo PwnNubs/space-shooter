@@ -12,9 +12,9 @@ var velocity : Vector2
 #@onready var bullet := load("res://scenes/projectiles/simple_bullet.tscn")
 @export var bullet : PackedScene
 
-var shoot_cooldown := 0.1
+var shoot_cooldown := 0.2
 var cooldown := shoot_cooldown
-var do_aim_at_mouse := true
+var do_aim_at_mouse := false
 
 func _ready():
 	# Set starting position
@@ -85,3 +85,8 @@ func process_movement(delta):
 		dopple.show()
 	else:
 		dopple.hide()
+
+
+func _on_area_2d_area_entered(area: Area2D) -> void:
+	if area.is_in_group("enemy"):
+		print("ouch")

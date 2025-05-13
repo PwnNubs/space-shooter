@@ -3,11 +3,11 @@ extends Area2D
 @export var enemy_data: EnemyData
 
 var health: float
+var color_modulate_timer: float = 0.0
 
 @onready var sprite := $Sprite2D
 
 func _ready():
-	print(enemy_data)
 	if not enemy_data:
 		printerr("EnemyData not assigned to", name, "!")
 		queue_free()
@@ -20,6 +20,15 @@ func _ready():
 
 func _process(delta):
 	position.y += 20.0 * delta
+	if color_modulate_timer > 0.0:
+		color_modulate_timer -= delta
+		if color_modulate_timer <= 0.0:
+			sprite.modulate = Color.WHITE
+
+func damage(amount: float):
+	health -= amount
+	sprite.modulate = Color.BROWN
+	color_modulate_timer = 0.15
 
 	if health <= 0.0:
 		queue_free()
