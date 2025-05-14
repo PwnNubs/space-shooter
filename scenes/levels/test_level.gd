@@ -19,7 +19,6 @@ func _ready():
 	add_child(area)
 	
 	area.area_exited.connect(on_bounds_exited)
-	
 
 func _process(delta):
 	spawn_timer -= delta

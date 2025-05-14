@@ -103,19 +103,16 @@ func process_missile(delta: float) -> void:
 	if Input.is_action_just_released("fire"):
 		do_aim_at_mouse = false
 
-	if missile_timer <= 0.0 and readied_missiles.size() < max_missiles:
+	if missile_timer <= 0.0 and not hardpoints.check_full():
 		missile_timer = missile_cooldown
 		# spawn readied missile with disabled collision
 		var a_missile := missile.instantiate()
-		var fill_attempt: bool = hardpoints.fill_slot(a_missile)
-		print(fill_attempt)
-		readied_missiles.push_back(a_missile)
+		hardpoints.fill_slot(a_missile)
 		a_missile.monitoring = false
-	
-	if readied_missiles.size() > 0 and Input.is_action_just_pressed("fire"):
+		
+	if not hardpoints.check_empty() and Input.is_action_just_pressed("fire"):
 		do_aim_at_mouse = true
-		active_missile = readied_missiles.pop_front()
-		remove_child(active_missile)
+		active_missile = hardpoints.release_slot()
 		owner.add_child(active_missile)
 		active_missile.monitoring = true
 
@@ -124,7 +121,6 @@ func process_missile(delta: float) -> void:
 			var m_pos := get_viewport().get_mouse_position()
 			angle = atan2(m_pos.y - position.y, m_pos.x - position.x) + PI / 2
 		active_missile.rotation = angle
-		active_missile.position = position
 		active_missile.velocity = (Vector2(sin(angle), -cos(angle)) * active_missile.speed) + (velocity / 8.0)
 	
 	if active_missile:
