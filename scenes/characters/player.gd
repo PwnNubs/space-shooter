@@ -20,7 +20,7 @@ var shoot_timer := shoot_cooldown
 @onready var hardpoints := $Hardpoints
 @export var missile : PackedScene
 var missile_cooldown := 1.0
-var missile_timer := missile_cooldown
+#var missile_timer := missile_cooldown
 var max_missiles: int = 2
 var readied_missiles : Array[Node]
 var active_missile : Node
@@ -98,21 +98,12 @@ func process_bullet(delta: float) -> void:
 			a_bullet.velocity = (Vector2(sin(angle), -cos(angle)) * a_bullet.speed) + (velocity / 8.0)
 			
 func process_missile(delta: float) -> void:
-	missile_timer -= delta
-	
 	if Input.is_action_just_released("fire"):
 		do_aim_at_mouse = false
-
-	if missile_timer <= 0.0 and not hardpoints.check_full():
-		missile_timer = missile_cooldown
-		# spawn readied missile with disabled collision
-		var a_missile := missile.instantiate()
-		hardpoints.fill_slot(a_missile)
-		a_missile.monitoring = false
 		
 	if not hardpoints.check_empty() and Input.is_action_just_pressed("fire"):
 		do_aim_at_mouse = true
-		active_missile = hardpoints.release_slot()
+		active_missile = hardpoints.release_a_slot()
 		owner.add_child(active_missile)
 		active_missile.monitoring = true
 
@@ -137,3 +128,10 @@ func process_missile(delta: float) -> void:
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemy"):
 		print("ouch")
+
+
+func _on_hardpoints_request_refill(index: int) -> void:
+	# spawn readied missile with disabled collision
+	var a_missile := missile.instantiate()
+	hardpoints.fill_slot(a_missile, index)
+	a_missile.monitoring = false
