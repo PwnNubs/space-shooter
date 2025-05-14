@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("1_q5daj")
 sprite_texture = ExtResource("2_q07lx")
-health = 60.0
+max_health = 20.0
 metadata/_custom_type_script = "uid://dhnyq23wg6bgd"

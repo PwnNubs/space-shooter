@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://bhj46bygwcxmu"]
+
+[ext_resource type="Script" uid="uid://b0bexvyc3jq01" path="res://scenes/projectiles/missile.gd" id="1_liya7"]
+[ext_resource type="Texture2D" uid="uid://u5ok3gq7vb3i" path="res://assets/simple_bullet.png" id="2_rovcw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q16ey"]
+size = Vector2(10, 12)
+
+[node name="Missle" type="Area2D" groups=["bullet"]]
+texture_filter = 1
+monitorable = false
+script = ExtResource("1_liya7")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_rovcw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_q16ey")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="area_exited" from="." to="." method="_on_area_exited"]

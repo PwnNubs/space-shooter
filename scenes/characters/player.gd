@@ -9,12 +9,22 @@ var velocity : Vector2
 @onready var screen_size := get_viewport_rect().size
 @onready var player_size: Vector2 = $Area2D/Sprite2D.get_rect().size * $Area2D/Sprite2D.global_scale
 @onready var dopple := $Area2D.duplicate()
+
+# Bullet
 #@onready var bullet := load("res://scenes/projectiles/simple_bullet.tscn")
 @export var bullet : PackedScene
-
 var shoot_cooldown := 0.2
-var cooldown := shoot_cooldown
-var do_aim_at_mouse := false
+var shoot_timer := shoot_cooldown
+
+# Missile
+@onready var hardpoints := $Hardpoints
+@export var missile : PackedScene
+var missile_cooldown := 1.0
+var missile_timer := missile_cooldown
+var max_missiles: int = 2
+var readied_missiles : Array[Node]
+var active_missile : Node
+var do_aim_at_mouse := true
 
 func _ready():
 	# Set starting position
@@ -24,32 +34,12 @@ func _ready():
 	dopple.hide()
 	add_child(dopple)
 
-func _process(delta):
+func _process(delta: float) -> void:
 	process_movement(delta)
-	
-	# shooting
-	cooldown -= delta
-	if cooldown <= 0.0:
-		cooldown = shoot_cooldown
-		var n_bullet := 1
-		for n in n_bullet:
-			var instance = bullet.instantiate()
-			var grid_offset = ((n_bullet - 1) * 2.0) + (n * 4.0)
-			owner.add_child(instance)
-			
-			# setup rotation
-			var angle := rotation - PI/2
-			if do_aim_at_mouse:
-				var m_pos := get_viewport().get_mouse_position()
-				angle = atan2(m_pos.y - position.y, m_pos.x - position.x)
-			instance.rotation = angle
-			# setup position
-			instance.position = position
-			instance.position.x -= grid_offset * sin(instance.rotation)
-			instance.position.y -= grid_offset * cos(instance.rotation)
-			instance.velocity = (Vector2(cos(instance.rotation), sin(instance.rotation)) * instance.speed) + (velocity / 8.0)
-	
-func process_movement(delta):
+	process_bullet(delta)
+	process_missile(delta)
+
+func process_movement(delta: float) -> void:
 	velocity = Vector2.ZERO
 	# Get Input
 	var input_velocity := Vector2.ZERO
@@ -86,6 +76,67 @@ func process_movement(delta):
 	else:
 		dopple.hide()
 
+func process_bullet(delta: float) -> void:
+	shoot_timer -= delta
+
+	if shoot_timer <= 0.0:
+		shoot_timer = shoot_cooldown
+		var n_bullet := 1
+		for n in n_bullet:
+			var a_bullet = bullet.instantiate()
+			owner.add_child(a_bullet)
+
+			var grid_offset = ((n_bullet - 1) * 2.0) - (n * 4.0)
+			
+			# setup rotation
+			var angle := rotation
+			a_bullet.rotation = angle
+			# setup position
+			a_bullet.position = position
+			a_bullet.position.x -= grid_offset * sin(a_bullet.rotation)
+			a_bullet.position.y -= grid_offset * cos(a_bullet.rotation)
+			a_bullet.velocity = (Vector2(sin(angle), -cos(angle)) * a_bullet.speed) + (velocity / 8.0)
+			
+func process_missile(delta: float) -> void:
+	missile_timer -= delta
+	
+	if Input.is_action_just_released("fire"):
+		do_aim_at_mouse = false
+
+	if missile_timer <= 0.0 and readied_missiles.size() < max_missiles:
+		missile_timer = missile_cooldown
+		# spawn readied missile with disabled collision
+		var a_missile := missile.instantiate()
+		var fill_attempt: bool = hardpoints.fill_slot(a_missile)
+		print(fill_attempt)
+		readied_missiles.push_back(a_missile)
+		a_missile.monitoring = false
+	
+	if readied_missiles.size() > 0 and Input.is_action_just_pressed("fire"):
+		do_aim_at_mouse = true
+		active_missile = readied_missiles.pop_front()
+		remove_child(active_missile)
+		owner.add_child(active_missile)
+		active_missile.monitoring = true
+
+		var angle := rotation
+		if do_aim_at_mouse:
+			var m_pos := get_viewport().get_mouse_position()
+			angle = atan2(m_pos.y - position.y, m_pos.x - position.x) + PI / 2
+		active_missile.rotation = angle
+		active_missile.position = position
+		active_missile.velocity = (Vector2(sin(angle), -cos(angle)) * active_missile.speed) + (velocity / 8.0)
+	
+	if active_missile:
+		if do_aim_at_mouse:
+			var m_pos := get_viewport().get_mouse_position()
+			var angle = atan2(m_pos.y - active_missile.position.y, m_pos.x - active_missile.position.x) + PI / 2
+			active_missile.rotation = angle
+			active_missile.velocity = (Vector2(sin(angle), -cos(angle)) * active_missile.speed)
+			
+		if Input.is_action_just_pressed("detonate"):
+			active_missile.detonate()
+	
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemy"):
