@@ -1,7 +1,8 @@
 extends Area2D
 
 var velocity := Vector2.ZERO
-var speed := 140.0
+var speed := 80.0
+var turn_limit := 0.4
 
 func _process(delta: float) -> void:
 	position += velocity * delta

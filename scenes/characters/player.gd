@@ -13,15 +13,13 @@ var velocity : Vector2
 # Bullet
 #@onready var bullet := load("res://scenes/projectiles/simple_bullet.tscn")
 @export var bullet : PackedScene
-var shoot_cooldown := 0.2
+var shoot_cooldown := 0.5
 var shoot_timer := shoot_cooldown
 
 # Missile
 @onready var hardpoints := $Hardpoints
 @export var missile : PackedScene
-var missile_cooldown := 1.0
-#var missile_timer := missile_cooldown
-var max_missiles: int = 2
+var missile_cooldown := 2.0
 var readied_missiles : Array[Node]
 var active_missile : Node
 var do_aim_at_mouse := true
@@ -33,11 +31,13 @@ func _ready():
 	
 	dopple.hide()
 	add_child(dopple)
+	
+	hardpoints.cooldown = missile_cooldown
 
 func _process(delta: float) -> void:
 	process_movement(delta)
 	process_bullet(delta)
-	process_missile(delta)
+	process_missile()
 
 func process_movement(delta: float) -> void:
 	velocity = Vector2.ZERO
@@ -97,7 +97,7 @@ func process_bullet(delta: float) -> void:
 			a_bullet.position.y -= grid_offset * cos(a_bullet.rotation)
 			a_bullet.velocity = (Vector2(sin(angle), -cos(angle)) * a_bullet.speed) + (velocity / 8.0)
 			
-func process_missile(delta: float) -> void:
+func process_missile() -> void:
 	if Input.is_action_just_released("fire"):
 		do_aim_at_mouse = false
 		
@@ -118,8 +118,11 @@ func process_missile(delta: float) -> void:
 		if do_aim_at_mouse:
 			var m_pos := get_viewport().get_mouse_position()
 			var angle = atan2(m_pos.y - active_missile.position.y, m_pos.x - active_missile.position.x) + PI / 2
-			active_missile.rotation = angle
-			active_missile.velocity = (Vector2(sin(angle), -cos(angle)) * active_missile.speed)
+			var angle_diff = angle_difference(active_missile.rotation, angle)
+			
+			angle_diff = clampf(angle_diff, -active_missile.turn_limit, active_missile.turn_limit)
+			active_missile.rotation += angle_diff
+			active_missile.velocity = (Vector2(sin(active_missile.rotation), -cos(active_missile.rotation)) * active_missile.speed)
 			
 		if Input.is_action_just_pressed("detonate"):
 			active_missile.detonate()
