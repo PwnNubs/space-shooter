@@ -2,7 +2,7 @@ extends Node2D
 
 const simple_enemy_res = preload("res://resources/enemies/simple_enemy.tres")
 var a_enemy := preload("res://scenes/characters/enemy.tscn")
-var spawn_cooldown: float = 0.5
+var spawn_cooldown: float = 0.01
 var spawn_timer: float = spawn_cooldown
 @onready var screen_size = get_viewport_rect().size
 
@@ -26,7 +26,7 @@ func _process(delta):
 		var enemy := a_enemy.instantiate()
 		add_child(enemy)
 		enemy.enemy_data = simple_enemy_res
-		enemy.position.x = randf_range(screen_size.x / 5, screen_size.x * 4 / 5)
+		enemy.position.x = randf_range(screen_size.x * 0.0, screen_size.x * 1.0)
 		enemy.position.y = -20.0
 		enemy.rotation = PI
 		spawn_timer = spawn_cooldown

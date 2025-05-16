@@ -14,6 +14,15 @@ script = ExtResource("1_onrkg")
 bullet = ExtResource("2_76oj4")
 missile = ExtResource("3_dyp2m")
 
+[node name="Hardpoints" type="Node2D" parent="."]
+script = ExtResource("5_atpat")
+
+[node name="00" type="Marker2D" parent="Hardpoints"]
+position = Vector2(12, 0)
+
+[node name="01" type="Marker2D" parent="Hardpoints"]
+position = Vector2(-12, 0)
+
 [node name="Area2D" type="Area2D" parent="." groups=["player"]]
 
 [node name="Sprite2D" type="Sprite2D" parent="Area2D"]
@@ -23,14 +32,5 @@ texture = ExtResource("2_i3pqv")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_76oj4")
 
-[node name="Hardpoints" type="Node2D" parent="."]
-script = ExtResource("5_atpat")
-
-[node name="00" type="Marker2D" parent="Hardpoints"]
-position = Vector2(10, 0)
-
-[node name="01" type="Marker2D" parent="Hardpoints"]
-position = Vector2(-10, 0)
-
-[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
 [connection signal="request_refill" from="Hardpoints" to="." method="_on_hardpoints_request_refill"]
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

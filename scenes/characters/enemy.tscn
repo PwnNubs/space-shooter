@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://scqt0f4xo4sr"]
+[gd_scene load_steps=6 format=3 uid="uid://scqt0f4xo4sr"]
 
 [ext_resource type="Script" uid="uid://crwtja82jkgib" path="res://scenes/characters/enemy.gd" id="1_7jb55"]
+[ext_resource type="PackedScene" uid="uid://c5bdxugbm35uj" path="res://scenes/explosion.tscn" id="2_21x0f"]
 [ext_resource type="Resource" uid="uid://bf7oop8xbg43o" path="res://resources/enemies/simple_enemy.tres" id="2_fulqv"]
 [ext_resource type="Texture2D" uid="uid://dsx413p76x6eo" path="res://assets/simple_enemy.png" id="3_f2e6v"]
 
@@ -10,9 +11,11 @@ radius = 6.08276
 [node name="Enemy" type="Area2D" groups=["enemy"]]
 texture_filter = 1
 script = ExtResource("1_7jb55")
+explosion_scene = ExtResource("2_21x0f")
 enemy_data = ExtResource("2_fulqv")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
 texture = ExtResource("3_f2e6v")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

@@ -1,19 +1,21 @@
 extends Node2D
 
+# movement
 var world_speed := 40.0 # rate at which things move towards bottom of screen
 var speed := 100.0 # player's speed
 var min_y := 0.20
 var max_y := 0.80
+var input_velocity : Vector2
 var velocity : Vector2
 
 @onready var screen_size := get_viewport_rect().size
 @onready var player_size: Vector2 = $Area2D/Sprite2D.get_rect().size * $Area2D/Sprite2D.global_scale
-@onready var dopple := $Area2D.duplicate()
+@onready var doppel := $Area2D.duplicate()
 
 # Bullet
 #@onready var bullet := load("res://scenes/projectiles/simple_bullet.tscn")
 @export var bullet : PackedScene
-var shoot_cooldown := 0.5
+var shoot_cooldown := 0.05#0.8
 var shoot_timer := shoot_cooldown
 
 # Missile
@@ -29,31 +31,30 @@ func _ready():
 	position.x = screen_size.x / 2
 	position.y = screen_size.y * max_y
 	
-	dopple.hide()
-	add_child(dopple)
+	doppel.hide()
+	add_child(doppel)
 	
 	hardpoints.cooldown = missile_cooldown
+	
+func _process(_delta: float) -> void:
+	_process_input()
 
-func _process(delta: float) -> void:
-	process_movement(delta)
-	process_bullet(delta)
-	process_missile()
-
-func process_movement(delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	_process_movement(delta)
+	_process_shoot(delta)
+	_process_missile()
+	
+func _process_input() -> void:
 	velocity = Vector2.ZERO
 	# Get Input
-	var input_velocity := Vector2.ZERO
-	if Input.is_action_pressed("move_right"):
-		input_velocity.x += 1
-	if Input.is_action_pressed("move_left"):
-		input_velocity.x -= 1
-	if Input.is_action_pressed("move_up"):
-		input_velocity.y -= 1
+	input_velocity.x = Input.get_axis("move_left", "move_right")
+	input_velocity.y = -Input.get_action_strength("move_up")
 	# normalize input
 	if input_velocity.length() > 0:
 		input_velocity = input_velocity.normalized()
-	
-	# Push player back towards bottom of screen
+		
+func _process_movement(delta: float) -> void:
+	# Push player back owards bottom of screen
 	if input_velocity.y >= 0 and position.y / screen_size.y < (max_y - 0.005):
 		velocity.y += world_speed
 	velocity = (input_velocity * speed) + velocity
@@ -65,46 +66,60 @@ func process_movement(delta: float) -> void:
 	position.x = wrapf(position.x, 0.0, screen_size.x)
 	
 	# visual wrapping
-	var player_left := position.x - (player_size.x / 2)
-	var player_right := position.x + (player_size.x / 2)
-	if player_left < 0.0 and position.x > 0.0: # partially inside left wall
-		dopple.position.x =   screen_size.x
-		dopple.show()
-	elif player_right > screen_size.x and position.x < screen_size.x: # partially inside right wall
-		dopple.position.x = -screen_size.x
-		dopple.show()
+	# !!!!!! BUGGED !!!!!!!!!
+	# sometimes doppel just gets removed
+	if doppel:
+		var player_left := position.x - (player_size.x / 2)
+		var player_right := position.x + (player_size.x / 2)
+		if player_left < 0.0 and position.x > 0.0: # partially inside left wall
+			doppel.position.x = screen_size.x
+			doppel.show()
+		elif player_right > screen_size.x and position.x < screen_size.x: # partially inside right wall
+			doppel.position.x = -screen_size.x
+			doppel.show()
+		else:
+			doppel.hide()
 	else:
-		dopple.hide()
+		doppel = $Area2D.duplicate()
+		doppel.hide()
+		add_child(doppel)
 
-func process_bullet(delta: float) -> void:
+func _process_shoot(delta: float) -> void:
 	shoot_timer -= delta
+	if shoot_timer > 0.0:
+		return
 
-	if shoot_timer <= 0.0:
-		shoot_timer = shoot_cooldown
-		var n_bullet := 1
-		for n in n_bullet:
-			var a_bullet = bullet.instantiate()
-			owner.add_child(a_bullet)
+	shoot_timer = shoot_cooldown
+	var n_bullet := 10
+	for n in n_bullet:
+		var a_bullet = bullet.instantiate()
+		owner.add_child(a_bullet)
 
-			var grid_offset = ((n_bullet - 1) * 2.0) - (n * 4.0)
-			
-			# setup rotation
-			var angle := rotation
-			a_bullet.rotation = angle
-			# setup position
-			a_bullet.position = position
-			a_bullet.position.x -= grid_offset * sin(a_bullet.rotation)
-			a_bullet.position.y -= grid_offset * cos(a_bullet.rotation)
-			a_bullet.velocity = (Vector2(sin(angle), -cos(angle)) * a_bullet.speed) + (velocity / 8.0)
-			
-func process_missile() -> void:
+		var grid_offset = ((n_bullet - 1) * 2.0) - (n * 4.0)
+		
+		# setup rotation
+		var angle := rotation
+		a_bullet.rotation = angle
+		# setup position
+		a_bullet.position = position
+		a_bullet.position.x -= grid_offset * cos(a_bullet.rotation)
+		a_bullet.position.y -= grid_offset * sin(a_bullet.rotation)
+		a_bullet.velocity = (Vector2.from_angle(angle - PI / 2) * a_bullet.speed) + (velocity / 8.0)#(Vector2(sin(angle), -cos(angle)) * a_bullet.speed) + (velocity / 8.0)
+		
+func _process_missile() -> void:
 	if Input.is_action_just_released("fire"):
 		do_aim_at_mouse = false
 		
 	if not hardpoints.check_empty() and Input.is_action_just_pressed("fire"):
 		do_aim_at_mouse = true
 		active_missile = hardpoints.release_a_slot()
-		owner.add_child(active_missile)
+		var missile_layer = owner.find_child("MissileLayer")
+		if not missile_layer:
+			printerr("MissileLayer was not found for ", owner)
+			active_missile.queue_free()
+			return
+		else:
+			missile_layer.add_child(active_missile)
 		active_missile.monitoring = true
 
 		var angle := rotation

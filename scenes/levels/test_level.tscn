@@ -1,13 +1,32 @@
-[gd_scene load_steps=4 format=3 uid="uid://g3kdjfvp2obx"]
+[gd_scene load_steps=6 format=3 uid="uid://g3kdjfvp2obx"]
 
 [ext_resource type="Script" uid="uid://clb20pvpfsikh" path="res://scenes/levels/test_level.gd" id="1_fr1um"]
 [ext_resource type="PackedScene" uid="uid://uub7hjanhibl" path="res://scenes/characters/player.tscn" id="1_jbqir"]
+[ext_resource type="Texture2D" uid="uid://b2sp3dtj55hrf" path="res://assets/background_lines.png" id="2_fr1um"]
+[ext_resource type="Texture2D" uid="uid://bh0ih02bbfw36" path="res://assets/background_space.png" id="3_v45ci"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jbqir"]
 size = Vector2(40, 6)
 
 [node name="TestLevel" type="Node2D"]
 script = ExtResource("1_fr1um")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(180, 232)
+
+[node name="BackgroundLines" type="Sprite2D" parent="."]
+texture = ExtResource("2_fr1um")
+centered = false
+
+[node name="Thumb-1920-380204" type="Sprite2D" parent="."]
+modulate = Color(0.619608, 0.686275, 0.666667, 0.627451)
+position = Vector2(180, 232)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_v45ci")
+region_enabled = true
+region_rect = Rect2(200, 100, 720, 928)
+
+[node name="MissileLayer" type="Node2D" parent="."]
 
 [node name="Player" parent="." instance=ExtResource("1_jbqir")]
 
