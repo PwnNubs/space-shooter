@@ -1,15 +1,20 @@
 extends Area2D
 
-@export var explosion_scene: PackedScene
-
 @export var enemy_data: EnemyData
 @onready var health := Health.new()
 
-var color_modulate_timer: float = 0.0
+var color_modulate_timer := 0.0
 
-@onready var rt := (randf() - 0.5) / 20.0
-@onready var speed := 15.0 + randf() * 15.0
-@onready var sprite := $Sprite2D
+@onready var speed := 15.0 + randf() * 5.0
+@onready var sprite := $Body
+
+@onready var sway_speed := (randf() * 20.0) - 10.0
+
+@onready var _explosion := $Explosion
+
+
+@export var explosion_damage: float
+@export var explosion_radius: float
 
 func _ready():
 	if not enemy_data:
@@ -18,19 +23,25 @@ func _ready():
 		return
 	
 	# init
-	health.max_hp = enemy_data.max_health * randf()
+	health.max_hp = enemy_data.hp
 	health.hp = health.max_hp
-	if enemy_data.sprite_texture:
-		sprite.texture = enemy_data.sprite_texture
+	#if enemy_data.sprite_texture:
+		#sprite.texture = enemy_data.sprite_texture
+		
+	$Engine.play()
 
 func _physics_process(delta: float) -> void:
+	if 0.01 >= randf():
+		sway_speed = -sway_speed
+		
+	position.x += sway_speed * delta
 	position.y += speed * delta
 	#global_position.round()
 	if color_modulate_timer > 0.0:
 		color_modulate_timer -= delta
 		if color_modulate_timer <= 0.0:
 			sprite.modulate = Color.WHITE
-	
+
 	#rotation += rt
 
 func damage(amount: float) -> void:
@@ -41,14 +52,20 @@ func damage(amount: float) -> void:
 	var dmg_ratio := clampf(amount / health.max_hp, 0.0, 1.0)
 	sprite.modulate = Color(1.0 - (dmg_ratio / 3.0), 1.0 - (dmg_ratio / 1.5), 1.0 - (dmg_ratio / 1.5))
 	color_modulate_timer = clampf(0.3 * (dmg_ratio * dmg_ratio), 0.01, 0.3)
+	
+	if health.hp <= health.max_hp * 0.25:
+		sprite.frame = 2
+	elif health.hp <= health.max_hp * 0.8:
+		sprite.frame = 1
 
 	if health.hp <= 0.0:
 		call_deferred("die")
 
 func die() -> void:
-	var explosion := explosion_scene.instantiate()
-	explosion.damage = 2.0
-	explosion.radius = 10.0
-	get_parent().add_child(explosion)
-	explosion.trigger(global_position)
+	$Boomi.play()
+	_explosion.trigger(global_position)
+	sprite.play("death")
+	$Engine.hide()
+	monitorable = false
+	await sprite.animation_finished
 	queue_free()

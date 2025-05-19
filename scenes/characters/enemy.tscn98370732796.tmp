@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://scqt0f4xo4sr"]
+[gd_scene load_steps=20 format=3 uid="uid://scqt0f4xo4sr"]
 
 [ext_resource type="Script" uid="uid://crwtja82jkgib" path="res://scenes/characters/enemy.gd" id="1_7jb55"]
 [ext_resource type="PackedScene" uid="uid://c5bdxugbm35uj" path="res://scenes/explosion.tscn" id="2_21x0f"]
@@ -16,26 +16,6 @@
 [ext_resource type="Texture2D" uid="uid://cdikfkk5wtlkb" path="res://assets/enemy/Explosion/explosion_02.png" id="9_ovt1e"]
 [ext_resource type="Texture2D" uid="uid://bwrn65ildcxpd" path="res://assets/enemy/Explosion/explosion_03.png" id="10_hvulg"]
 [ext_resource type="Texture2D" uid="uid://n2iyntlqw7q7" path="res://assets/enemy/Explosion/explosion_04.png" id="11_yj4uo"]
-[ext_resource type="Texture2D" uid="uid://c7igx8in6rixy" path="res://assets/enemy/Engine/engine_00.png" id="17_7ktny"]
-[ext_resource type="Texture2D" uid="uid://bqgeel306wrui" path="res://assets/enemy/Engine/engine_01.png" id="18_rji51"]
-[ext_resource type="AudioStream" uid="uid://pk8ypccoot8q" path="res://assets/enemy/boomi.ogg" id="19_rji51"]
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_7ktny"]
-blend_mode = 1
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_7bjuq"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("17_7ktny")
-}, {
-"duration": 1.0,
-"texture": ExtResource("18_rji51")
-}],
-"loop": true,
-"name": &"default",
-"speed": 5.0
-}]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_f0ik5"]
 animations = [{
@@ -77,7 +57,7 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_f2e6v"]
 radius = 6.08276
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_rji51"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_dtiis"]
 animations = [{
 "frames": [{
 "duration": 1.5,
@@ -103,14 +83,8 @@ animations = [{
 [node name="Enemy" type="Area2D" groups=["enemy"]]
 texture_filter = 1
 script = ExtResource("1_7jb55")
+explosion_scene = ExtResource("2_21x0f")
 enemy_data = ExtResource("2_fulqv")
-
-[node name="Engine" type="AnimatedSprite2D" parent="."]
-modulate = Color(1, 1, 1, 0.462745)
-material = SubResource("CanvasItemMaterial_7ktny")
-sprite_frames = SubResource("SpriteFrames_7bjuq")
-frame = 1
-frame_progress = 0.549084
 
 [node name="Body" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_f0ik5")
@@ -118,10 +92,8 @@ sprite_frames = SubResource("SpriteFrames_f0ik5")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_f2e6v")
 
-[node name="Boomi" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("19_rji51")
-
-[node name="Explosion" parent="." instance=ExtResource("2_21x0f")]
-damage = 2.0
-radius = 10.0
-sprite_frames = SubResource("SpriteFrames_rji51")
+[node name="Explosion" type="AnimatedSprite2D" parent="."]
+visible = false
+sprite_frames = SubResource("SpriteFrames_dtiis")
+frame = 4
+frame_progress = 1.0

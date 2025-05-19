@@ -15,7 +15,7 @@ var velocity : Vector2
 # Bullet
 #@onready var bullet := load("res://scenes/projectiles/simple_bullet.tscn")
 @export var bullet : PackedScene
-var shoot_cooldown := 0.05#0.8
+var shoot_cooldown := 0.8#0.8
 var shoot_timer := shoot_cooldown
 
 # Missile
@@ -53,11 +53,15 @@ func _process_input() -> void:
 	if input_velocity.length() > 0:
 		input_velocity = input_velocity.normalized()
 		
+	# debug
+	if Input.is_action_just_pressed("debug"):
+		print(owner.get_child_count())
+		
 func _process_movement(delta: float) -> void:
 	# Push player back owards bottom of screen
 	if input_velocity.y >= 0 and position.y / screen_size.y < (max_y - 0.005):
 		velocity.y += world_speed
-	velocity = (input_velocity * speed) + velocity
+	velocity = Vector2(input_velocity.x * speed, input_velocity.y * speed / 2) + velocity
 	# Actually move player
 	position += velocity * delta
 	position.y = clamp(position.y, min_y * screen_size.y, max_y * screen_size.y)
@@ -90,12 +94,13 @@ func _process_shoot(delta: float) -> void:
 		return
 
 	shoot_timer = shoot_cooldown
-	var n_bullet := 10
+	var n_bullet := 2
+	var spacing := 10.0
 	for n in n_bullet:
 		var a_bullet = bullet.instantiate()
 		owner.add_child(a_bullet)
 
-		var grid_offset = ((n_bullet - 1) * 2.0) - (n * 4.0)
+		var grid_offset = ((n_bullet - 1) * (spacing / 2)) - (n * spacing)
 		
 		# setup rotation
 		var angle := rotation
@@ -145,7 +150,7 @@ func _process_missile() -> void:
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.is_in_group("enemy"):
-		print("ouch")
+		pass #print("ouch")
 
 
 func _on_hardpoints_request_refill(index: int) -> void:

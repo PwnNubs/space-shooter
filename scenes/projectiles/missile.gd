@@ -23,7 +23,7 @@ func _on_area_exited(area: Area2D) -> void:
 
 func detonate():
 	var explosion := explosion_scene.instantiate()
-	explosion.radius = 40.0
+	explosion.radius = 80.0#24.0
 	get_parent().add_child(explosion)
 	explosion.trigger(global_position)
 	queue_free()

@@ -2,13 +2,11 @@ extends Node2D
 
 class Hardpoint:
 	var marker: Marker2D
-	var occupied: bool
 	var time_vacant := 0.0
 	var time_occupied := 0.0
 	
-	func _init(_marker: Marker2D, _occupied: bool):
+	func _init(_marker: Marker2D):
 		marker = _marker
-		occupied = _occupied
 
 var slots: Array[Hardpoint]
 
@@ -20,14 +18,14 @@ signal request_refill(index: int)
 
 func _ready():
 	for n in get_children():
-		slots.push_back(Hardpoint.new(n, false))
+		slots.push_back(Hardpoint.new(n))
 
 func _process(delta: float) -> void:
 	for n in slots:
-		if not n.occupied:
-			n.time_vacant += delta
-		else:
+		if n.marker.get_child_count():
 			n.time_occupied += delta
+		else:
+			n.time_vacant += delta
 	
 	if autorefill:
 		for i in slots.size():
@@ -36,13 +34,13 @@ func _process(delta: float) -> void:
 
 func check_full() -> bool:
 	for n in slots:
-		if not n.occupied:
+		if n.marker.get_child_count:
 			return false
 	return true
 
 func check_empty() -> bool:
 	for n in slots:
-		if n.occupied:
+		if n.marker.get_child_count():
 			return false
 	return true
 
@@ -52,7 +50,6 @@ func fill_slot(node: Node2D, slot: int) -> bool:
 			node.get_praent().remove_child(node)
 		slots[slot].marker.add_child(node)
 		slots[slot].time_vacant = 0.0
-		slots[slot].occupied = true
 		return true
 	else:
 		return false # unable to fill any slots
@@ -77,7 +74,6 @@ func release_slot(slot: int) -> Node2D:
 		node.position = node.global_position
 		slots[slot].marker.remove_child(node)
 		slots[slot].time_occupied = 0.0
-		slots[slot].occupied = false
 		return node
 	else:
 		return null # unable to fill any slots
