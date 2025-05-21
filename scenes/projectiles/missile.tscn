@@ -1,17 +1,44 @@
-[gd_scene load_steps=5 format=3 uid="uid://bhj46bygwcxmu"]
+[gd_scene load_steps=8 format=3 uid="uid://bhj46bygwcxmu"]
 
 [ext_resource type="Script" uid="uid://b0bexvyc3jq01" path="res://scenes/projectiles/missile.gd" id="1_liya7"]
 [ext_resource type="PackedScene" uid="uid://c5bdxugbm35uj" path="res://scenes/explosion.tscn" id="2_nsqj0"]
 [ext_resource type="Texture2D" uid="uid://u5ok3gq7vb3i" path="res://assets/simple_bullet.png" id="2_rovcw"]
+[ext_resource type="Texture2D" uid="uid://f4jtvcgf80yc" path="res://assets/a_boom.png" id="3_nsqj0"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_nsqj0"]
+blend_mode = 1
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rovcw"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_nsqj0")
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": false,
+"name": &"default",
+"speed": 8.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q16ey"]
 size = Vector2(10, 12)
 
 [node name="Missle" type="Area2D" groups=["bullet"]]
 texture_filter = 1
+collision_layer = 0
+collision_mask = 2
 monitorable = false
 script = ExtResource("1_liya7")
-explosion_scene = ExtResource("2_nsqj0")
+
+[node name="Explosion" parent="." instance=ExtResource("2_nsqj0")]
+damage = 20.0
+radius = 34.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Explosion"]
+material = SubResource("CanvasItemMaterial_nsqj0")
+sprite_frames = SubResource("SpriteFrames_rovcw")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_rovcw")
@@ -21,3 +48,4 @@ shape = SubResource("RectangleShape2D_q16ey")
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="area_exited" from="." to="." method="_on_area_exited"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://g3kdjfvp2obx"]
+[gd_scene load_steps=7 format=3 uid="uid://g3kdjfvp2obx"]
 
 [ext_resource type="Script" uid="uid://clb20pvpfsikh" path="res://scenes/levels/test_level.gd" id="1_fr1um"]
 [ext_resource type="PackedScene" uid="uid://uub7hjanhibl" path="res://scenes/characters/player.tscn" id="1_jbqir"]
 [ext_resource type="Texture2D" uid="uid://b2sp3dtj55hrf" path="res://assets/background_lines.png" id="2_fr1um"]
 [ext_resource type="Texture2D" uid="uid://bh0ih02bbfw36" path="res://assets/background_space.png" id="3_v45ci"]
+[ext_resource type="Script" uid="uid://cumumkro1h31e" path="res://scenes/levels/enemy_layer.gd" id="4_48ne7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jbqir"]
 size = Vector2(40, 6)
@@ -49,11 +50,35 @@ grow_vertical = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Wall"]
 shape = SubResource("RectangleShape2D_jbqir")
 
-[node name="EnemyLayer" type="Node2D" parent="."]
+[node name="EnemyLayer" type="Node2D" parent="." groups=["EnemyLayer"]]
+script = ExtResource("4_48ne7")
+
+[node name="BulletLayer" type="Node2D" parent="." groups=["BulletLayer"]]
+
+[node name="ExplosionLayer" type="Node2D" parent="." groups=["ExplosionLayer"]]
+
+[node name="Kills" type="Label" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 274.0
+offset_top = 12.0
+offset_right = 354.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+
+[node name="Fuel" type="Label" parent="."]
+offset_left = 306.0
+offset_top = 429.0
+offset_right = 346.0
+offset_bottom = 452.0
 
 [node name="BackgroundLines" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 1, 0.0627451)
 texture = ExtResource("2_fr1um")
 centered = false
+metadata/_edit_lock_ = true
 
 [connection signal="area_entered" from="Wall" to="Wall" method="_on_area_entered"]

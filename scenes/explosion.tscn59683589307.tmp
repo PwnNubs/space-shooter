@@ -48,8 +48,6 @@ color_ramp = SubResource("GradientTexture1D_aw4cw")
 
 [node name="Explosion" type="Area2D" groups=["explosion"]]
 material = SubResource("CanvasItemMaterial_17npe")
-collision_layer = 8
-collision_mask = 3
 monitorable = false
 script = ExtResource("1_17npe")
 

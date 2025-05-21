@@ -1,4 +1,4 @@
-extends Area2D
+extends RigidBody2D
 
 @export var enemy_data: EnemyData
 @onready var health := Health.new()
@@ -6,15 +6,13 @@ extends Area2D
 var color_modulate_timer := 0.0
 
 @onready var speed := 15.0 + randf() * 5.0
-@onready var sprite := $Body
 
 @onready var sway_speed := (randf() * 20.0) - 10.0
 
+@onready var _boomi := $Boomi
 @onready var _explosion := $Explosion
-
-
-@export var explosion_damage: float
-@export var explosion_radius: float
+@onready var _body := $Body
+@onready var _engine := $Engine
 
 func _ready():
 	if not enemy_data:
@@ -26,7 +24,7 @@ func _ready():
 	health.max_hp = enemy_data.hp
 	health.hp = health.max_hp
 	#if enemy_data.sprite_texture:
-		#sprite.texture = enemy_data.sprite_texture
+		#$Body.texture = enemy_data.sprite_texture
 		
 	$Engine.play()
 
@@ -40,7 +38,7 @@ func _physics_process(delta: float) -> void:
 	if color_modulate_timer > 0.0:
 		color_modulate_timer -= delta
 		if color_modulate_timer <= 0.0:
-			sprite.modulate = Color.WHITE
+			$Body.modulate = Color.WHITE
 
 	#rotation += rt
 
@@ -50,22 +48,30 @@ func damage(amount: float) -> void:
 		
 	health.hp -= amount
 	var dmg_ratio := clampf(amount / health.max_hp, 0.0, 1.0)
-	sprite.modulate = Color(1.0 - (dmg_ratio / 3.0), 1.0 - (dmg_ratio / 1.5), 1.0 - (dmg_ratio / 1.5))
+	$Body.modulate = Color(1.0 - (dmg_ratio / 3.0), 1.0 - (dmg_ratio / 1.5), 1.0 - (dmg_ratio / 1.5))
 	color_modulate_timer = clampf(0.3 * (dmg_ratio * dmg_ratio), 0.01, 0.3)
 	
 	if health.hp <= health.max_hp * 0.25:
-		sprite.frame = 2
+		$Body.frame = 2
 	elif health.hp <= health.max_hp * 0.8:
-		sprite.frame = 1
+		$Body.frame = 1
 
 	if health.hp <= 0.0:
-		call_deferred("die")
+		die()
 
 func die() -> void:
-	$Boomi.play()
-	_explosion.trigger(global_position)
-	sprite.play("death")
-	$Engine.hide()
-	monitorable = false
-	await sprite.animation_finished
+	get_tree().get_first_node_in_group("EnemyLayer").kill_count += 1
+	_explosion.trigger()
+	await get_tree().physics_frame
+	_boomi.play()
+	_body.play("death")
+	_engine.hide()
+	#collision_layer = 10
+	# remove collision
+	#for collision_shape in find_children("*", "CollisionShape2D"):
+		#collision_shape.set_deferred("disabled", true)
+	 # messes with stuff
+	#$CollisionShape2D.disabled = true
+	$CollisionShape2D.queue_free()
+	await _body.animation_finished
 	queue_free()

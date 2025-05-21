@@ -1,12 +1,19 @@
 extends Node2D
 
 # movement
-var world_speed := 40.0 # rate at which things move towards bottom of screen
+var world_speed := 15.0 # rate at which things move towards bottom of screen
 var speed := 100.0 # player's speed
 var min_y := 0.20
 var max_y := 0.80
-var input_velocity : Vector2
-var velocity : Vector2
+var input_velocity: Vector2
+var velocity: Vector2
+
+var fuel := 0.0
+var fuel_max := 20.0
+var fuel_depletion_rate := 0.4
+var fuel_recovery_rate := 0.3
+var fuel_recovery_cooldown := 1.4
+@onready var fuel_cooldown_timer := fuel_recovery_cooldown
 
 @onready var screen_size := get_viewport_rect().size
 @onready var player_size: Vector2 = $Area2D/Sprite2D.get_rect().size * $Area2D/Sprite2D.global_scale
@@ -48,7 +55,7 @@ func _process_input() -> void:
 	velocity = Vector2.ZERO
 	# Get Input
 	input_velocity.x = Input.get_axis("move_left", "move_right")
-	input_velocity.y = -Input.get_action_strength("move_up")
+	input_velocity.y = Input.get_action_strength("move_up")
 	# normalize input
 	if input_velocity.length() > 0:
 		input_velocity = input_velocity.normalized()
@@ -58,10 +65,28 @@ func _process_input() -> void:
 		print(owner.get_child_count())
 		
 func _process_movement(delta: float) -> void:
+	var velocity_intent := input_velocity
+	
+	# process fuel
+	if input_velocity.y <= 0.0:
+		velocity_intent.y = 0.0
+		if fuel_cooldown_timer > 0.0:
+			fuel_cooldown_timer = maxf(fuel_cooldown_timer - delta, 0.0)
+		else:
+			fuel = minf(fuel + fuel_recovery_rate, fuel_max)
+	elif input_velocity.y > 0.0:
+		if fuel > 0.0:
+			velocity_intent.y = -1.0
+			fuel = maxf(fuel - fuel_depletion_rate, 0.0)
+			fuel_cooldown_timer = fuel_recovery_cooldown
+		else:
+			velocity_intent.y = 0.0
+	
+	
 	# Push player back owards bottom of screen
-	if input_velocity.y >= 0 and position.y / screen_size.y < (max_y - 0.005):
+	if velocity_intent.y >= 0.0 and position.y / screen_size.y < (max_y - 0.005):
 		velocity.y += world_speed
-	velocity = Vector2(input_velocity.x * speed, input_velocity.y * speed / 2) + velocity
+	velocity = Vector2(input_velocity.x * speed, (velocity_intent.y * 0.8) * speed) + velocity
 	# Actually move player
 	position += velocity * delta
 	position.y = clamp(position.y, min_y * screen_size.y, max_y * screen_size.y)
@@ -97,8 +122,9 @@ func _process_shoot(delta: float) -> void:
 	var n_bullet := 2
 	var spacing := 10.0
 	for n in n_bullet:
+		$ShootAudio.play()
 		var a_bullet = bullet.instantiate()
-		owner.add_child(a_bullet)
+		get_tree().get_first_node_in_group("BulletLayer").add_child(a_bullet)
 
 		var grid_offset = ((n_bullet - 1) * (spacing / 2)) - (n * spacing)
 		

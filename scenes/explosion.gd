@@ -1,41 +1,83 @@
-extends Node2D
+extends Area2D
 class_name Explosion
 
 #var force: float
-@export var damage: float = 100.0
-@export var radius: float = 40.0
+@export var damage: float
+@export var radius: float
 
-@export var sprite_frames: SpriteFrames
-@export var particles: GPUParticles2D
-
-@onready var _damage_area := $Area2D
-@onready var _animated_sprite := $AnimatedSprite2D
+var particles: GPUParticles2D
 
 func _ready() -> void:
-	# set defaults if not given
-
+	# get particles child
 	if not particles:
 		particles = $GPUParticles2D
-	if not sprite_frames:
-		sprite_frames = SpriteFrames.new()
-	_animated_sprite.sprite_frames = sprite_frames
-	_animated_sprite.hide()
-	
-	var shape = CircleShape2D.new()
-	shape.radius = radius
-	_damage_area.get_node("CollisionShape2D").shape = shape
+	# huh, me, nothing
+	set_process(false)
+	hide()
 
 
-func trigger(location: Vector2) -> void:
-	global_position = location
+func trigger() -> void:
 	await get_tree().physics_frame
 	
-	_animated_sprite.show()
-	_animated_sprite.play()
+	reparent(get_tree().get_nodes_in_group("ExplosionLayer")[0])
+	set_process(true)
+	show()
+
+	var animations: Array[AnimatedSprite2D]
+	for child in get_children():
+		if child is AnimatedSprite2D:
+			animations.append(child)
+			
+	for animation in animations:
+		animation.play()
+		
 	particles.emitting = true
-	for area in _damage_area.get_overlapping_areas():
-		if "health" in area:
-			area.damage(damage)
-	await _animated_sprite.animation_finished
+	
+	# if radius and has a shape, set shape size
+	# if radius no shape, setup a shape
+	# if no radius and shape, do nothing
+	# if no radius and no shape, printerr()
+	#
+	var collision_shapes: Array[CollisionShape2D] #= find_children("*", "CollisionShape2D")
+	for shape in get_children():
+		if shape is CollisionShape2D:
+			collision_shapes.append(shape)
+			
+	if radius > 0.01 and collision_shapes.size() > 0:
+		print("a")
+		collision_shapes[0].shape.radius = radius
+	elif radius > 0.01 and collision_shapes.size() == 0:
+		var shape = CircleShape2D.new()
+		shape.radius = radius
+		var collision_shape := CollisionShape2D.new()
+		collision_shape.shape = shape
+		add_child(collision_shape)
+		collision_shapes.append(collision_shape)
+	elif radius == 0.0 and collision_shapes.size() == 0:
+		printerr("Explosion: ", self, "needs a radius or CollisionShape2D child to work")
+		queue_free()
+	
+	# double the radius so they are captured in falloff calculation
+	#print(collision_shapes.size())
+	for cs in collision_shapes:
+		var shape = CircleShape2D.new()
+		shape.radius = cs.shape.radius * 2
+		var collision_shape := CollisionShape2D.new()
+		collision_shape.shape = shape
+		add_child(collision_shape)
+	
+		
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	for body in get_overlapping_bodies():#get_overlapping_areas():
+		if "health" in body:
+			var distance = global_position.distance_to(body.global_position)
+			if distance <= collision_shapes[0].shape.radius:
+				body.damage(damage)
+			else:
+				body.damage(damage * (collision_shapes[0].shape.radius / distance) * (collision_shapes[0].shape.radius / distance))
+
+	for animation in animations:
+		await animation.animation_finished
 	
 	queue_free()

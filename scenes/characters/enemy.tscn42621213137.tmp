@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://scqt0f4xo4sr"]
+[gd_scene load_steps=26 format=3 uid="uid://scqt0f4xo4sr"]
 
 [ext_resource type="Script" uid="uid://crwtja82jkgib" path="res://scenes/characters/enemy.gd" id="1_7jb55"]
 [ext_resource type="PackedScene" uid="uid://c5bdxugbm35uj" path="res://scenes/explosion.tscn" id="2_21x0f"]
@@ -54,9 +54,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("8_7bjuq")
-}, {
-"duration": 1.0,
-"texture": null
 }],
 "loop": false,
 "name": &"death",
@@ -77,14 +74,10 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rji51"]
-radius = 7.0
-height = 16.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_f2e6v"]
+radius = 6.08276
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_rji51"]
-blend_mode = 1
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_d55bs"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_rji51"]
 animations = [{
 "frames": [{
 "duration": 1.5,
@@ -107,14 +100,10 @@ animations = [{
 "speed": 12.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_ky1ao"]
-custom_solver_bias = 1.0
-radius = 9.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_rji51"]
 
-[node name="Enemy" type="RigidBody2D" groups=["enemy"]]
+[node name="Enemy" type="Area2D" groups=["enemy"]]
 texture_filter = 1
-collision_layer = 2
-collision_mask = 0
 script = ExtResource("1_7jb55")
 enemy_data = ExtResource("2_fulqv")
 
@@ -129,17 +118,18 @@ frame_progress = 0.549084
 sprite_frames = SubResource("SpriteFrames_f0ik5")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CapsuleShape2D_rji51")
+shape = SubResource("CircleShape2D_f2e6v")
 
 [node name="Boomi" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("19_rji51")
 
 [node name="Explosion" parent="." instance=ExtResource("2_21x0f")]
-damage = 30.0
+damage = 2.0
+radius = 10.0
 
 [node name="ExplosionSprite" type="AnimatedSprite2D" parent="Explosion"]
-material = SubResource("CanvasItemMaterial_rji51")
-sprite_frames = SubResource("SpriteFrames_d55bs")
+sprite_frames = SubResource("SpriteFrames_rji51")
+frame = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Explosion"]
-shape = SubResource("CircleShape2D_ky1ao")
+shape = SubResource("CircleShape2D_rji51")
