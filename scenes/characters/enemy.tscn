@@ -132,7 +132,7 @@ sprite_frames = SubResource("SpriteFrames_f0ik5")
 shape = SubResource("CapsuleShape2D_rji51")
 
 [node name="Explosion" parent="." instance=ExtResource("2_21x0f")]
-damage = 30.0
+damage = 20.0
 audio_stream = ExtResource("19_rji51")
 
 [node name="ExplosionSprite" type="AnimatedSprite2D" parent="Explosion"]

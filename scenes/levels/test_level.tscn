@@ -80,11 +80,12 @@ grow_horizontal = 2
 grow_vertical = 2
 horizontal_alignment = 1
 
-[node name="Fuel" type="Label" parent="."]
-offset_left = 306.0
-offset_top = 429.0
-offset_right = 346.0
-offset_bottom = 452.0
+[node name="Fuel" type="ColorRect" parent="."]
+clip_contents = true
+offset_left = 276.0
+offset_top = 434.0
+offset_right = 340.0
+offset_bottom = 442.0
 
 [node name="BackgroundLines" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 1, 0.0627451)

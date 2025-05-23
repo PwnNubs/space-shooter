@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjgerbeoxvc82"]
+
+[ext_resource type="Script" uid="uid://dviwdq3rixbd6" path="res://scenes/weapons/lightning_gun.gd" id="1_oh874"]
+[ext_resource type="PackedScene" uid="uid://cgjl71ifavk55" path="res://scenes/projectiles/lightning_bolt.tscn" id="2_jk6h6"]
+
+[node name="LightningGun" type="Node2D"]
+script = ExtResource("1_oh874")
+lightning_bolt_scene = ExtResource("2_jk6h6")

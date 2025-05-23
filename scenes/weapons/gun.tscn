@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://b3tqlndg6x4dq"]
+
+[ext_resource type="Script" uid="uid://dw4wmarjn8pma" path="res://scenes/weapons/gun.gd" id="1_76485"]
+[ext_resource type="PackedScene" uid="uid://cp7xa068g70v4" path="res://scenes/projectiles/simple_bullet.tscn" id="2_mfrst"]
+[ext_resource type="AudioStream" uid="uid://3qnvcul2jl36" path="res://assets/shoot.ogg" id="3_imjbj"]
+
+[node name="Gun" type="Node2D"]
+script = ExtResource("1_76485")
+bullet_scene = ExtResource("2_mfrst")
+
+[node name="ShootAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_imjbj")
+volume_db = -13.213

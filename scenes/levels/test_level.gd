@@ -35,7 +35,8 @@ func _process(delta):
 			print("wacked") 
 	# process player fuel ui
 	var player = get_tree().get_first_node_in_group("player")
-	$Fuel.text = str(roundf($Player.fuel * 10.0) / 10.0)
+	#$Fuel.text = str(roundf($Player.fuel * 10.0) / 10.0)
+	$Fuel.size.x = $Player.fuel * (64.0 / $Player.fuel_max)
 	$Points.text = str($Player.points)
 	#$Kills.text = str($EnemyLayer.kill_count)
 	

@@ -1,11 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://uub7hjanhibl"]
+[gd_scene load_steps=10 format=3 uid="uid://uub7hjanhibl"]
 
 [ext_resource type="Script" uid="uid://bu70gaams58ef" path="res://scenes/characters/player.gd" id="1_onrkg"]
-[ext_resource type="PackedScene" uid="uid://cp7xa068g70v4" path="res://scenes/projectiles/simple_bullet.tscn" id="2_76oj4"]
+[ext_resource type="PackedScene" uid="uid://bjgerbeoxvc82" path="res://scenes/weapons/lightning_gun.tscn" id="2_atpat"]
 [ext_resource type="Texture2D" uid="uid://clqiepp6x1agn" path="res://assets/icon.svg" id="2_i3pqv"]
 [ext_resource type="PackedScene" uid="uid://bhj46bygwcxmu" path="res://scenes/projectiles/missile.tscn" id="3_dyp2m"]
 [ext_resource type="Script" uid="uid://c4n3w06xpltmc" path="res://scenes/characters/hardpoints.gd" id="5_atpat"]
-[ext_resource type="AudioStream" uid="uid://3qnvcul2jl36" path="res://assets/shoot.ogg" id="6_kqtwu"]
 [ext_resource type="Script" uid="uid://bqhjxp2v48drj" path="res://scenes/pickup_zone.gd" id="7_6eyoc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_76oj4"]
@@ -19,8 +18,9 @@ radius = 97.0052
 
 [node name="Player" type="Node2D" groups=["player"]]
 script = ExtResource("1_onrkg")
-bullet = ExtResource("2_76oj4")
 missile = ExtResource("3_dyp2m")
+
+[node name="LightningGun" parent="." instance=ExtResource("2_atpat")]
 
 [node name="Hardpoints" type="Node2D" parent="."]
 script = ExtResource("5_atpat")
@@ -40,10 +40,6 @@ texture = ExtResource("2_i3pqv")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_76oj4")
-
-[node name="ShootAudio" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("6_kqtwu")
-volume_db = -13.213
 
 [node name="CollectionZone" type="Area2D" parent="."]
 collision_layer = 16
