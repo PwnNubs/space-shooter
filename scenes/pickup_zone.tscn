@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://do2riw47f762"]
+
+[ext_resource type="Script" uid="uid://bqhjxp2v48drj" path="res://scenes/pickup_zone.gd" id="1_bn0s3"]
+
+[node name="PickupZone" type="Area2D"]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_bn0s3")

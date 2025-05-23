@@ -13,7 +13,7 @@ dest_files=["res://.godot/imported/boomi.ogg-fa9f70d9671b788eebd373f17191c2f1.og
 [params]
 
 loop=false
-loop_offset=0
-bpm=0
+loop_offset=0.002
+bpm=0.0
 beat_count=0
 bar_beats=4

@@ -9,7 +9,6 @@ var color_modulate_timer := 0.0
 
 @onready var sway_speed := (randf() * 20.0) - 10.0
 
-@onready var _boomi := $Boomi
 @onready var _explosion := $Explosion
 @onready var _body := $Body
 @onready var _engine := $Engine
@@ -28,13 +27,14 @@ func _ready():
 		
 	$Engine.play()
 
+
 func _physics_process(delta: float) -> void:
 	if 0.01 >= randf():
 		sway_speed = -sway_speed
 		
 	position.x += sway_speed * delta
 	position.y += speed * delta
-	#global_position.round()
+	
 	if color_modulate_timer > 0.0:
 		color_modulate_timer -= delta
 		if color_modulate_timer <= 0.0:
@@ -59,19 +59,21 @@ func damage(amount: float) -> void:
 	if health.hp <= 0.0:
 		die()
 
+
+# some state thing is happening that is messing with this
 func die() -> void:
-	get_tree().get_first_node_in_group("EnemyLayer").kill_count += 1
-	_explosion.trigger()
-	await get_tree().physics_frame
-	_boomi.play()
+	var enemy_layer = get_tree().get_first_node_in_group("EnemyLayer")
+	if enemy_layer:
+		enemy_layer.kill_count += 1
+	var pickup_layer = get_tree().get_first_node_in_group("PickupLayer")
+	if pickup_layer:
+		pickup_layer.spawn(187.5, global_position)
+		
 	_body.play("death")
 	_engine.hide()
-	#collision_layer = 10
-	# remove collision
-	#for collision_shape in find_children("*", "CollisionShape2D"):
-		#collision_shape.set_deferred("disabled", true)
-	 # messes with stuff
-	#$CollisionShape2D.disabled = true
+	_explosion.trigger()
+	set_deferred("collision_layer", 0)
+	await get_tree().physics_frame
 	$CollisionShape2D.queue_free()
 	await _body.animation_finished
 	queue_free()

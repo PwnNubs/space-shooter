@@ -8,11 +8,10 @@
 size = Vector2(2.5, 3)
 
 [node name="Bullet" type="Area2D" groups=["bullet"]]
-collision_layer = 0
+collision_layer = 4
 collision_mask = 2
-monitorable = false
 script = ExtResource("1_w71u1")
-damage = 8.0
+damage = 1.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1

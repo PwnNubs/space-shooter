@@ -21,7 +21,8 @@ func _on_area_exited(area: Area2D) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("enemy"):
 		body.damage(4.0)
-		
+	
+	$BulletHitAudio.pitch_scale = randf_range(0.95, 1.05)
 	$BulletHitAudio.play()
 	$CollisionShape2D.queue_free()
 	hide()

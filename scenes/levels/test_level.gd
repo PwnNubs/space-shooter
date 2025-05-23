@@ -2,31 +2,13 @@ extends Node2D
 
 const simple_enemy_res = preload("res://resources/enemies/simple_enemy.tres")
 var a_enemy := preload("res://scenes/characters/enemy.tscn")
-var spawn_cooldown: float = 0.01#0.6#0.01#1.5 0.05
+var spawn_cooldown: float = 0.6#1.5 0.05
 var spawn_timer: float = spawn_cooldown
 @onready var screen_size = get_viewport_rect().size
 
 func _ready():
 	#get_tree().debug_collisions_hint = true
-	
-	# setup play zone, anything outiside of this should be deleted
-	var area = Area2D.new()
-	var collision_shape = CollisionShape2D.new()
-	var rect_shape = RectangleShape2D.new()
-	rect_shape.size = Vector2(screen_size.x * 1.5, screen_size.y * 1.5)
-	collision_shape.shape = rect_shape
-	area.add_child(collision_shape)
-	area.position = screen_size / 2
-	area.add_to_group("boundary")
-	area.monitorable = false
-	area.monitoring = true
-	area.collision_mask = 0b1111
-	add_child(area)
-	
-	area.area_exited.connect(on_bounds_exited)
-	area.body_exited.connect(on_bounds_exited)
-	
-	$Player/AudioListener2D.make_current()
+	pass
 
 func _process(delta):
 	spawn_timer -= delta
@@ -41,14 +23,21 @@ func _process(delta):
 			spawn_timer = spawn_cooldown
 			
 	if Input.is_action_just_pressed("debug"):
-		print($EnemyLayer.get_child_count())
-		
+		print("EnemyLayer:", $EnemyLayer.get_child_count())
+		print("BulletLayer:", $BulletLayer.get_child_count())
+	
+	var bounds := [-180.0, 540.0, -232.0, 696.0]
+	for i in get_child_count():
+		var child = get_child(i)
+		if (child.position.x < bounds[0] or child.position.x > bounds[1]
+		  or child.position.y < bounds[2] or child.position.y > bounds[3]):
+			child.queue_free()
+			print("wacked") 
 	# process player fuel ui
 	var player = get_tree().get_first_node_in_group("player")
-	$Fuel.text = str(player.fuel)
+	$Fuel.text = str(roundf($Player.fuel * 10.0) / 10.0)
+	$Points.text = str($Player.points)
+	#$Kills.text = str($EnemyLayer.kill_count)
 	
-	$Kills.text = str($EnemyLayer.kill_count)
-	
-
-func on_bounds_exited(area):
-	area.queue_free()
+func _on_killzone_entered(node) -> void:
+	node.queue_free()

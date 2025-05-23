@@ -1,5 +1,6 @@
 extends Node2D
 
+var points := 0.0
 # movement
 var world_speed := 15.0 # rate at which things move towards bottom of screen
 var speed := 100.0 # player's speed
@@ -11,7 +12,7 @@ var velocity: Vector2
 var fuel := 0.0
 var fuel_max := 20.0
 var fuel_depletion_rate := 0.4
-var fuel_recovery_rate := 0.3
+var fuel_recovery_rate := 0.2
 var fuel_recovery_cooldown := 1.4
 @onready var fuel_cooldown_timer := fuel_recovery_cooldown
 
@@ -22,7 +23,7 @@ var fuel_recovery_cooldown := 1.4
 # Bullet
 #@onready var bullet := load("res://scenes/projectiles/simple_bullet.tscn")
 @export var bullet : PackedScene
-var shoot_cooldown := 0.8#0.8
+var shoot_cooldown := 0.8
 var shoot_timer := shoot_cooldown
 
 # Missile
@@ -59,10 +60,6 @@ func _process_input() -> void:
 	# normalize input
 	if input_velocity.length() > 0:
 		input_velocity = input_velocity.normalized()
-		
-	# debug
-	if Input.is_action_just_pressed("debug"):
-		print(owner.get_child_count())
 		
 func _process_movement(delta: float) -> void:
 	var velocity_intent := input_velocity
@@ -122,6 +119,7 @@ func _process_shoot(delta: float) -> void:
 	var n_bullet := 2
 	var spacing := 10.0
 	for n in n_bullet:
+		$ShootAudio.pitch_scale = randf_range(0.95, 1.05)
 		$ShootAudio.play()
 		var a_bullet = bullet.instantiate()
 		get_tree().get_first_node_in_group("BulletLayer").add_child(a_bullet)

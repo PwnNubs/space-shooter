@@ -4,6 +4,7 @@ class_name Explosion
 #var force: float
 @export var damage: float
 @export var radius: float
+@export var audio_stream: AudioStream
 
 var particles: GPUParticles2D
 
@@ -30,8 +31,12 @@ func trigger() -> void:
 			
 	for animation in animations:
 		animation.play()
-		
+	
 	particles.emitting = true
+	
+	if audio_stream:
+		var explosion_layer = get_tree().get_first_node_in_group("ExplosionLayer")
+		explosion_layer.request_play_audio(audio_stream)
 	
 	# if radius and has a shape, set shape size
 	# if radius no shape, setup a shape
@@ -44,7 +49,6 @@ func trigger() -> void:
 			collision_shapes.append(shape)
 			
 	if radius > 0.01 and collision_shapes.size() > 0:
-		print("a")
 		collision_shapes[0].shape.radius = radius
 	elif radius > 0.01 and collision_shapes.size() == 0:
 		var shape = CircleShape2D.new()

@@ -1,13 +1,19 @@
-[gd_scene load_steps=7 format=3 uid="uid://g3kdjfvp2obx"]
+[gd_scene load_steps=11 format=3 uid="uid://g3kdjfvp2obx"]
 
 [ext_resource type="Script" uid="uid://clb20pvpfsikh" path="res://scenes/levels/test_level.gd" id="1_fr1um"]
 [ext_resource type="PackedScene" uid="uid://uub7hjanhibl" path="res://scenes/characters/player.tscn" id="1_jbqir"]
 [ext_resource type="Texture2D" uid="uid://b2sp3dtj55hrf" path="res://assets/background_lines.png" id="2_fr1um"]
 [ext_resource type="Texture2D" uid="uid://bh0ih02bbfw36" path="res://assets/background_space.png" id="3_v45ci"]
+[ext_resource type="Script" uid="uid://chd3fypa1y0l7" path="res://scenes/levels/pickup_layer.gd" id="4_6xh4u"]
 [ext_resource type="Script" uid="uid://cumumkro1h31e" path="res://scenes/levels/enemy_layer.gd" id="4_48ne7"]
+[ext_resource type="PackedScene" uid="uid://dixw7i7uwfwik" path="res://scenes/pickup.tscn" id="5_7x1jh"]
+[ext_resource type="Script" uid="uid://dw5rtjt8aq8it" path="res://scenes/levels/explosion_layer.gd" id="6_cyt5c"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jbqir"]
 size = Vector2(40, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cyt5c"]
+size = Vector2(411, 137)
 
 [node name="TestLevel" type="Node2D"]
 script = ExtResource("1_fr1um")
@@ -50,14 +56,19 @@ grow_vertical = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Wall"]
 shape = SubResource("RectangleShape2D_jbqir")
 
+[node name="PickupLayer" type="Node2D" parent="." groups=["PickupLayer"]]
+script = ExtResource("4_6xh4u")
+pickup_scene = ExtResource("5_7x1jh")
+
 [node name="EnemyLayer" type="Node2D" parent="." groups=["EnemyLayer"]]
 script = ExtResource("4_48ne7")
 
 [node name="BulletLayer" type="Node2D" parent="." groups=["BulletLayer"]]
 
 [node name="ExplosionLayer" type="Node2D" parent="." groups=["ExplosionLayer"]]
+script = ExtResource("6_cyt5c")
 
-[node name="Kills" type="Label" parent="."]
+[node name="Points" type="Label" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -81,4 +92,18 @@ texture = ExtResource("2_fr1um")
 centered = false
 metadata/_edit_lock_ = true
 
+[node name="Killzone" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 255
+monitorable = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Killzone"]
+polygon = PackedVector2Array(-180, -232, -240, -292, 600, -292, 600, 756, -240, 756, -240, -292, -180, -232, -180, 696, 540, 696, 540, -232)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Killzone"]
+position = Vector2(182, -117)
+shape = SubResource("RectangleShape2D_cyt5c")
+
 [connection signal="area_entered" from="Wall" to="Wall" method="_on_area_entered"]
+[connection signal="area_entered" from="Killzone" to="." method="_on_killzone_entered"]
+[connection signal="body_entered" from="Killzone" to="." method="_on_killzone_entered"]
