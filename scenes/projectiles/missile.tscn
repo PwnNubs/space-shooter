@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://bhj46bygwcxmu"]
+[gd_scene load_steps=9 format=3 uid="uid://bhj46bygwcxmu"]
 
 [ext_resource type="Script" uid="uid://b0bexvyc3jq01" path="res://scenes/projectiles/missile.gd" id="1_liya7"]
 [ext_resource type="PackedScene" uid="uid://c5bdxugbm35uj" path="res://scenes/explosion.tscn" id="2_nsqj0"]
 [ext_resource type="Texture2D" uid="uid://u5ok3gq7vb3i" path="res://assets/simple_bullet.png" id="2_rovcw"]
 [ext_resource type="Texture2D" uid="uid://f4jtvcgf80yc" path="res://assets/a_boom.png" id="3_nsqj0"]
+[ext_resource type="Script" uid="uid://bn674vo2l2t55" path="res://scripts/damage.gd" id="4_pt4qx"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_nsqj0"]
 blend_mode = 1
@@ -32,13 +33,18 @@ collision_mask = 2
 monitorable = false
 script = ExtResource("1_liya7")
 
-[node name="Explosion" parent="." instance=ExtResource("2_nsqj0")]
-damage = 20.0
+[node name="Explosion" parent="." node_paths=PackedStringArray("damage") instance=ExtResource("2_nsqj0")]
+damage = NodePath("Damage")
 radius = 34.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Explosion"]
 material = SubResource("CanvasItemMaterial_nsqj0")
 sprite_frames = SubResource("SpriteFrames_rovcw")
+
+[node name="Damage" type="Node" parent="Explosion"]
+script = ExtResource("4_pt4qx")
+amount = 50.0
+metadata/_custom_type_script = "uid://bn674vo2l2t55"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_rovcw")

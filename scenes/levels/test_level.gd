@@ -2,7 +2,7 @@ extends Node2D
 
 const simple_enemy_res = preload("res://resources/enemies/simple_enemy.tres")
 var a_enemy := preload("res://scenes/characters/enemy.tscn")
-var spawn_cooldown: float = 0.6#1.5 0.05
+var spawn_cooldown: float = 0.06#1.5 0.05
 var spawn_timer: float = spawn_cooldown
 @onready var screen_size = get_viewport_rect().size
 
@@ -23,8 +23,10 @@ func _process(delta):
 			spawn_timer = spawn_cooldown
 			
 	if Input.is_action_just_pressed("debug"):
+		print("--- Node Count ---")
 		print("EnemyLayer:", $EnemyLayer.get_child_count())
 		print("BulletLayer:", $BulletLayer.get_child_count())
+		print("PickupLayer:", $PickupLayer.get_child_count())
 	
 	var bounds := [-180.0, 540.0, -232.0, 696.0]
 	for i in get_child_count():
@@ -36,8 +38,8 @@ func _process(delta):
 	# process player fuel ui
 	var player = get_tree().get_first_node_in_group("player")
 	#$Fuel.text = str(roundf($Player.fuel * 10.0) / 10.0)
-	$Fuel.size.x = $Player.fuel * (64.0 / $Player.fuel_max)
-	$Points.text = str($Player.points)
+	$Fuel.size.x = player.fuel * (64.0 / player.fuel_max)
+	$Points.text = str(player.points)
 	#$Kills.text = str($EnemyLayer.kill_count)
 	
 func _on_killzone_entered(node) -> void:

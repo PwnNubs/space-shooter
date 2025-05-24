@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://cdyx26fr0561s"]
+
+[ext_resource type="Script" uid="uid://rp7btehd715o" path="res://scenes/projectiles/spark_orb.gd" id="1_4b23p"]
+[ext_resource type="PackedScene" uid="uid://cgjl71ifavk55" path="res://scenes/projectiles/lightning_bolt.tscn" id="2_7vebt"]
+[ext_resource type="Script" uid="uid://bn674vo2l2t55" path="res://scripts/damage.gd" id="3_2cjc2"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7vebt"]
+radius = 5.0
+
+[node name="SparkOrb" type="Area2D" node_paths=PackedStringArray("damage")]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_4b23p")
+damage = NodePath("Damage")
+lightning_bolt_scene = ExtResource("2_7vebt")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(5, -2, 5, 2, 4, 4, 2, 5, -2, 5, -4, 4, -5, 2, -5, -2, -4, -4, -2, -5, 2, -5, 4, -4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_7vebt")
+
+[node name="Damage" type="Node" parent="."]
+script = ExtResource("3_2cjc2")
+amount = 8.0
+type = 1
+metadata/_custom_type_script = "uid://bn674vo2l2t55"

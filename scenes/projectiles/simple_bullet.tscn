@@ -1,17 +1,18 @@
-[gd_scene load_steps=5 format=3 uid="uid://cp7xa068g70v4"]
+[gd_scene load_steps=6 format=3 uid="uid://cp7xa068g70v4"]
 
 [ext_resource type="Texture2D" uid="uid://u5ok3gq7vb3i" path="res://assets/simple_bullet.png" id="1_8yp3a"]
 [ext_resource type="Script" uid="uid://benj2sdr7b1x4" path="res://scenes/projectiles/simple_bullet.gd" id="1_w71u1"]
 [ext_resource type="AudioStream" uid="uid://c3jx78t21md76" path="res://assets/bullet_hit00.ogg" id="3_78jog"]
+[ext_resource type="Script" uid="uid://bn674vo2l2t55" path="res://scripts/damage.gd" id="3_yttot"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_78jog"]
 size = Vector2(2.5, 3)
 
-[node name="Bullet" type="Area2D" groups=["bullet"]]
+[node name="Bullet" type="Area2D" node_paths=PackedStringArray("damage") groups=["bullet"]]
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("1_w71u1")
-damage = 1.0
+damage = NodePath("Damage")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
@@ -26,6 +27,11 @@ shape = SubResource("RectangleShape2D_78jog")
 stream = ExtResource("3_78jog")
 volume_db = -5.127
 pitch_scale = 0.4
+
+[node name="Damage" type="Node" parent="."]
+script = ExtResource("3_yttot")
+amount = 4.0
+metadata/_custom_type_script = "uid://bn674vo2l2t55"
 
 [connection signal="area_exited" from="." to="." method="_on_area_exited"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

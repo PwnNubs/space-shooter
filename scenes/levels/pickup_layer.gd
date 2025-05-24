@@ -14,7 +14,7 @@ func spawn(amount: float, pos: Vector2) -> void:
 		for n in orb_count:
 			var pickup = pickup_scene.instantiate()
 			pickup.value = value
-			pickup.scale *= sqrt(value)
+			pickup.scale *= sqrt(value) / 10.0
 			pos += Vector2(randf_range(-10.0, 10.0), randf_range(-10.0, 10.0))
 			pickup.position = pos
 			add_child(pickup)
@@ -23,7 +23,7 @@ func spawn(amount: float, pos: Vector2) -> void:
 	if amount > 0.0:
 		var pickup = pickup_scene.instantiate()
 		pickup.value = amount
-		pickup.scale *= sqrt(orb_values.back())
+		pickup.scale *= sqrt(orb_values.back()) / 10.0
 		pos += Vector2(randf_range(-10.0, 10.0), randf_range(-10.0, 10.0))
 		pickup.position = pos
 		add_child(pickup)

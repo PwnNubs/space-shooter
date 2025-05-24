@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://scqt0f4xo4sr"]
+[gd_scene load_steps=28 format=3 uid="uid://scqt0f4xo4sr"]
 
 [ext_resource type="Script" uid="uid://crwtja82jkgib" path="res://scenes/characters/enemy.gd" id="1_7jb55"]
 [ext_resource type="PackedScene" uid="uid://c5bdxugbm35uj" path="res://scenes/explosion.tscn" id="2_21x0f"]
@@ -19,6 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://c7igx8in6rixy" path="res://assets/enemy/Engine/engine_00.png" id="17_7ktny"]
 [ext_resource type="Texture2D" uid="uid://bqgeel306wrui" path="res://assets/enemy/Engine/engine_01.png" id="18_rji51"]
 [ext_resource type="AudioStream" uid="uid://pk8ypccoot8q" path="res://assets/enemy/boomi.ogg" id="19_rji51"]
+[ext_resource type="Script" uid="uid://bn674vo2l2t55" path="res://scripts/damage.gd" id="20_7bjuq"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_7ktny"]
 blend_mode = 1
@@ -131,8 +132,8 @@ sprite_frames = SubResource("SpriteFrames_f0ik5")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_rji51")
 
-[node name="Explosion" parent="." instance=ExtResource("2_21x0f")]
-damage = 20.0
+[node name="Explosion" parent="." node_paths=PackedStringArray("damage") instance=ExtResource("2_21x0f")]
+damage = NodePath("Damage")
 audio_stream = ExtResource("19_rji51")
 
 [node name="ExplosionSprite" type="AnimatedSprite2D" parent="Explosion"]
@@ -141,3 +142,8 @@ sprite_frames = SubResource("SpriteFrames_d55bs")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Explosion"]
 shape = SubResource("CircleShape2D_ky1ao")
+
+[node name="Damage" type="Node" parent="Explosion"]
+script = ExtResource("20_7bjuq")
+amount = 25.0
+metadata/_custom_type_script = "uid://bn674vo2l2t55"

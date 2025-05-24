@@ -6,12 +6,13 @@ extends RigidBody2D
 var color_modulate_timer := 0.0
 
 @onready var speed := 15.0 + randf() * 5.0
-
 @onready var sway_speed := (randf() * 20.0) - 10.0
 
 @onready var _explosion := $Explosion
 @onready var _body := $Body
 @onready var _engine := $Engine
+
+var disabled_timer := 0.0
 
 func _ready():
 	if not enemy_data:
@@ -29,6 +30,10 @@ func _ready():
 
 
 func _physics_process(delta: float) -> void:
+	disabled_timer -= delta
+	if disabled_timer > 0.0:
+		return
+	
 	if 0.01 >= randf():
 		sway_speed = -sway_speed
 		
@@ -40,14 +45,16 @@ func _physics_process(delta: float) -> void:
 		if color_modulate_timer <= 0.0:
 			$Body.modulate = Color.WHITE
 
-	#rotation += rt
 
-func damage(amount: float) -> void:
+func hit(damage: Damage) -> void:
 	if health.hp <= 0.0: # avoid possible infinite loop from stacking on death effects
 		return
-		
-	health.hp -= amount
-	var dmg_ratio := clampf(amount / health.max_hp, 0.0, 1.0)
+	
+	if damage.type == Damage.TYPE.ELECTRIC:
+		disabled_timer = 0.6
+	
+	health.hp -= damage.amount
+	var dmg_ratio := clampf(damage.amount / health.max_hp, 0.0, 1.0)
 	$Body.modulate = Color(1.0 - (dmg_ratio / 3.0), 1.0 - (dmg_ratio / 1.5), 1.0 - (dmg_ratio / 1.5))
 	color_modulate_timer = clampf(0.3 * (dmg_ratio * dmg_ratio), 0.01, 0.3)
 	

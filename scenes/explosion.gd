@@ -2,7 +2,7 @@ extends Area2D
 class_name Explosion
 
 #var force: float
-@export var damage: float
+@export var damage: Damage
 @export var radius: float
 @export var audio_stream: AudioStream
 
@@ -77,9 +77,11 @@ func trigger() -> void:
 		if "health" in body:
 			var distance = global_position.distance_to(body.global_position)
 			if distance <= collision_shapes[0].shape.radius:
-				body.damage(damage)
+				body.hit(damage)
 			else:
-				body.damage(damage * (collision_shapes[0].shape.radius / distance) * (collision_shapes[0].shape.radius / distance))
+				var a_damage = damage
+				a_damage.amount *= (collision_shapes[0].shape.radius / distance) * (collision_shapes[0].shape.radius / distance)
+				body.hit(a_damage)
 
 	for animation in animations:
 		await animation.animation_finished
